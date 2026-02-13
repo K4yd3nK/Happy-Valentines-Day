@@ -1,10 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Will You Be My Valentine Kaylie?❤️</title>
+  <div class="choice-buttons">
+    <button id="yesBtn">YES 💖</button>
+    <button id="noBtn">NO 😈</button>
+</div>
+  
+<audio id="bgMusic" src="music.mp3"></audio>
   <style>
+    .choice-buttons {
+    margin-top: 20px;
+}
+
+.choice-buttons button {
+    font-size: 20px;
+    padding: 15px 30px;
+    margin: 10px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* YES Button */
+#yesBtn {
+    background: #ff4da6;
+    color: white;
+}
+
+#yesBtn.clicked {
+    animation: pop 0.6s ease forwards;
+}
+
+@keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.4) rotate(5deg); }
+    100% { transform: scale(1.2); }
+}
+
+/* NO Button */
+#noBtn {
+    background: #444;
+    color: white;
+    position: relative;
+  
     * { box-sizing: border-box; }
     body {
       margin: 0;
@@ -16,6 +58,7 @@
       align-items: center;
       min-height: 100vh;
       padding: 15px;
+      transition: background 0.5s ease;
     }
     .card {
       background: rgba(0,0,0,.25);
@@ -26,10 +69,13 @@
       text-align: center;
       box-shadow: 0 12px 30px rgba(0,0,0,.35);
     }
-    h1 { font-size: clamp(2rem,5vw,2.6rem); }
+    h1 { font-size: clamp(2rem,5vw,2.6rem); margin-bottom:10px; }
     p { font-size: 1.05rem; line-height: 1.6; }
     .heart { font-size: 3rem; animation: beat 1.2s infinite; margin: 15px 0; }
     @keyframes beat { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+
+    .topButtons { margin:15px 0 5px 0; }
+    .topButtons button { margin: 5px; }
 
     .countdown { margin: 18px 0; font-size: 1.15rem; font-weight: bold; }
 
@@ -59,12 +105,11 @@
       border-radius:35px;
       font-weight:bold;
       cursor:pointer;
-      min-width:220px;
+      min-width:160px;
     }
 
     .footer { margin-top:25px; font-size:1rem; opacity:.9; }
 
-    /* POPUPS */
     .overlay {
       position:fixed;
       inset:0;
@@ -83,7 +128,6 @@
       text-align:center;
     }
 
-    /* GIFT */
     .giftBox { width:160px; height:140px; margin:20px auto; position:relative; cursor:pointer; }
     .boxBase { background:#ff4f81; width:100%; height:100px; position:absolute; bottom:0; border-radius:0 0 12px 12px; }
     .boxLid { background:#ff2f6d; width:100%; height:45px; position:absolute; top:0; border-radius:12px; transform-origin:bottom; transition:.6s; }
@@ -95,17 +139,23 @@
 </head>
 <body>
 
-<!-- Background music (starts after interaction) -->
 <audio id="bgMusic" loop>
   <source src="think-im-in-love-with-you.mp3" type="audio/mpeg">
 </audio>
 
 <div class="card">
   <h1>Will You Be My Valentine Kaylie?❤️</h1>
+
+  <!-- YES / NO BUTTONS -->
+  <div class="topButtons">
+    <button onclick="sheSaidYes()">Yes</button>
+    <button onclick="sheSaidNo()">No</button>
+  </div>
+
   <div class="heart">💖</div>
 
   <div class="countdown">
-    The Next Time We See Each Other Again 💕<br />
+    The Next Time We See Each Other Again 💕<br>
     <span id="timer"></span>
   </div>
 
@@ -115,7 +165,6 @@
     <img src="photo3.jpg">
   </div>
 
-  <!-- EDIT THIS MESSAGE DIRECTLY IN CODE -->
   <div class="message">
     Kaylie, I'm so sorry that I can't be there with you for Valentine's Day. You know that moneys a little tight right now and
     I was struggling to figure out what to get you. So I really hope that you like this. I love you so much baby and I miss you as well. 
@@ -131,7 +180,7 @@
   <div class="footer">Forever yours 💕<br>– Kayden</div>
 </div>
 
-<!-- PLANS POPUP -->
+<!-- POPUPS -->
 <div class="overlay" id="plansPopup">
   <div class="popup">
     <h2>Tonight’s Plans 💕</h2>
@@ -141,7 +190,6 @@
   </div>
 </div>
 
-<!-- LOCK POPUP -->
 <div class="overlay" id="lockPopup">
   <div class="popup">
     <h2>🔐 Enter Password</h2>
@@ -152,7 +200,6 @@
   </div>
 </div>
 
-<!-- GIFT POPUP -->
 <div class="overlay" id="giftPopup">
   <div class="popup">
     <h2>🎁 Surprise 🎁</h2>
@@ -160,22 +207,21 @@
       <div class="boxLid"></div>
       <div class="boxBase"></div>
     </div>
-    <p>Redeemable:</p>
-    <p>Choose Any Flowers Of Your Choice On Me 💐</p>
-    <p>Best Head You've Ever Recieved</p>
-    <p>Full Body Rub & Massage</p>
-    <p>Actuall Date Night</p>
+     <p>Redeemable:</p>
+     <p>Choose Any Flowers Of Your Choice On Me 💐</p>
+     <p>Best Head You've Ever Recieved</p>
+     <p>Full Body Rub & Massage</p>
+     <p>Actuall Date Night</p>
     <button onclick="closeAll()">Close</button>
   </div>
 </div>
 
 <script>
-// Countdown (days, hours, minutes, seconds)
+// COUNTDOWN
 const target = new Date('April 10, 2026 00:00:00').getTime();
 setInterval(() => {
   const now = new Date().getTime();
   let diff = target - now;
-
   if (diff < 0) diff = 0;
 
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -187,18 +233,24 @@ setInterval(() => {
     `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
 }, 1000);
 
-// Music must start after user interaction (browser rules)
-function startMusic() {
+// YES BUTTON
+function sheSaidYes() {
   document.getElementById('bgMusic').play().catch(()=>{});
+  alert('Great Choice! I love you so much. I hope you enjoy this! ❤️');
+}
+
+// NO BUTTON
+function sheSaidNo() {
+  alert('You\'re fired 😤');
+  window.open('', '_self');
+  window.close();
 }
 
 function openPlans() {
-  startMusic();
   document.getElementById('plansPopup').style.display='flex';
 }
 
 function showLock() {
-  startMusic();
   document.getElementById('lockPopup').style.display='flex';
 }
 
@@ -224,6 +276,42 @@ function openBox(box) {
 
 function closeAll() {
   document.querySelectorAll('.overlay').forEach(o=>o.style.display='none');
+}
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+const music = document.getElementById("bgMusic");
+
+yesBtn.addEventListener("click", () => {
+    yesBtn.classList.add("clicked");
+    music.play();
+    alert("Great Choice! I love you so much. I hope you enjoy this!");
+    createHearts();
+});
+
+noBtn.addEventListener("mouseover", () => {
+    const x = Math.random() * (window.innerWidth - 100);
+    const y = Math.random() * (window.innerHeight - 100);
+
+    noBtn.style.position = "absolute";
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+});
+
+function createHearts() {
+    for (let i = 0; i < 20; i++) {
+        const heart = document.createElement("div");
+        heart.innerHTML = "💖";
+        heart.style.position = "fixed";
+        heart.style.left = Math.random() * window.innerWidth + "px";
+        heart.style.top = window.innerHeight + "px";
+        heart.style.fontSize = "24px";
+        heart.style.animation = "floatUp 3s linear forwards";
+        document.body.appendChild(heart);
+
+        setTimeout(() => {
+            heart.remove();
+        }, 3000);
+    }
 }
 </script>
 </body>
