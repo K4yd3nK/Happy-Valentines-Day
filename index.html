@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Will You Be My Valentine Kaylie?❤️</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #ff758c, #ff7eb3);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 15px;
+    }
+    .card {
+      background: rgba(0,0,0,.25);
+      padding: 30px;
+      border-radius: 22px;
+      max-width: 820px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 12px 30px rgba(0,0,0,.35);
+    }
+    h1 { font-size: clamp(2rem,5vw,2.6rem); }
+    p { font-size: 1.05rem; line-height: 1.6; }
+    .heart { font-size: 3rem; animation: beat 1.2s infinite; margin: 15px 0; }
+    @keyframes beat { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+
+    .countdown { margin: 18px 0; font-size: 1.15rem; font-weight: bold; }
+
+    .photos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 12px;
+      margin: 22px 0;
+    }
+    .photos img { width:100%; height:160px; border-radius:15px; object-fit:cover; }
+
+    .message {
+      margin-top: 20px;
+      background: rgba(255,255,255,.15);
+      padding: 18px;
+      border-radius: 15px;
+      font-size: 1.05rem;
+    }
+
+    .buttons { display:flex; justify-content:center; gap:16px; flex-wrap:wrap; margin-top:22px; }
+    button {
+      background:#fff;
+      color:#ff4f81;
+      border:none;
+      padding:16px 26px;
+      font-size:1.05rem;
+      border-radius:35px;
+      font-weight:bold;
+      cursor:pointer;
+      min-width:220px;
+    }
+
+    .footer { margin-top:25px; font-size:1rem; opacity:.9; }
+
+    /* POPUPS */
+    .overlay {
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.6);
+      display:none;
+      justify-content:center;
+      align-items:center;
+      z-index:10;
+    }
+    .popup {
+      background:linear-gradient(135deg,#ff7eb3,#ff758c);
+      padding:30px;
+      border-radius:22px;
+      max-width:420px;
+      width:90%;
+      text-align:center;
+    }
+
+    /* GIFT */
+    .giftBox { width:160px; height:140px; margin:20px auto; position:relative; cursor:pointer; }
+    .boxBase { background:#ff4f81; width:100%; height:100px; position:absolute; bottom:0; border-radius:0 0 12px 12px; }
+    .boxLid { background:#ff2f6d; width:100%; height:45px; position:absolute; top:0; border-radius:12px; transform-origin:bottom; transition:.6s; }
+    .giftBox.open .boxLid { transform:rotateX(150deg); }
+
+    .petal { position:fixed; top:-20px; font-size:20px; animation:fall linear forwards; z-index:20; }
+    @keyframes fall { to { transform:translateY(110vh) rotate(360deg); opacity:0; } }
+  </style>
+</head>
+<body>
+
+<!-- Background music (starts after interaction) -->
+<audio id="bgMusic" loop>
+  <source src="think-im-in-love-with-you.mp3" type="audio/mpeg">
+</audio>
+
+<div class="card">
+  <h1>Happy Valentine’s Day, Kaylie ❤️</h1>
+  <div class="heart">💖</div>
+
+  <div class="countdown">
+    The Next Time We See Each Other Again 💕<br />
+    <span id="timer"></span>
+  </div>
+
+  <div class="photos">
+    <img src="photo1.jpg">
+    <img src="photo2.jpg">
+    <img src="photo3.jpg">
+  </div>
+
+  <!-- EDIT THIS MESSAGE DIRECTLY IN CODE -->
+  <div class="message">
+    Kaylie, I'm so sorry that I can't be there with you for Valentine's Day. You know that moneys a little tight right now and
+    I was struggling to figure out what to get you. So I really hope that you like this. I love you so much baby and I miss you as well. 
+    I cannot wait to see you again and hold you in my arms. I hope you enjoy your gifts and plans for today. I want you to know baby that 
+    I am so proud of woman that you are. I'm so proud of all of your accomplishments and I'm soooooooo proud to call you mine. I love you mommas. Happy Valentines Day!!!
+  </div>
+
+  <div class="buttons">
+    <button onclick="openPlans()">Today’s Plans</button>
+    <button onclick="showLock()">Open Your Gift 🎁</button>
+  </div>
+
+  <div class="footer">Forever yours 💕<br>– Kayden</div>
+</div>
+
+<!-- PLANS POPUP -->
+<div class="overlay" id="plansPopup">
+  <div class="popup">
+    <h2>Tonight’s Plans 💕</h2>
+    <p>Movie night after work 🍿</p>
+    <p>Fast food dinner date ❤️</p>
+    <button onclick="closeAll()">Close</button>
+  </div>
+</div>
+
+<!-- LOCK POPUP -->
+<div class="overlay" id="lockPopup">
+  <div class="popup">
+    <h2>🔐 Enter Password</h2>
+    <p>Hint: our anniversary date</p>
+    <input id="password" placeholder="MMDDYYYY" style="padding:12px;border-radius:10px;border:none;width:100%;">
+    <br><br>
+    <button onclick="checkPass()">Unlock</button>
+  </div>
+</div>
+
+<!-- GIFT POPUP -->
+<div class="overlay" id="giftPopup">
+  <div class="popup">
+    <h2>🎁 Surprise 🎁</h2>
+    <div class="giftBox" onclick="openBox(this)">
+      <div class="boxLid"></div>
+      <div class="boxBase"></div>
+    </div>
+    <p>Redeemable:</p>
+    <p>Choose Any Flowers Of Your Choice On Me 💐</p>
+    <p>Best Head You've Ever Recieved</p>
+    <p>Full Body Rub & Massage</p>
+    <p>Actuall Date Night</p>
+    <button onclick="closeAll()">Close</button>
+  </div>
+</div>
+
+<script>
+// Countdown (days, hours, minutes, seconds)
+const target = new Date('April 10, 2026 00:00:00').getTime();
+setInterval(() => {
+  const now = new Date().getTime();
+  let diff = target - now;
+
+  if (diff < 0) diff = 0;
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+  document.getElementById('timer').innerText =
+    `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
+}, 1000);
+
+// Music must start after user interaction (browser rules)
+function startMusic() {
+  document.getElementById('bgMusic').play().catch(()=>{});
+}
+
+function openPlans() {
+  startMusic();
+  document.getElementById('plansPopup').style.display='flex';
+}
+
+function showLock() {
+  startMusic();
+  document.getElementById('lockPopup').style.display='flex';
+}
+
+function checkPass() {
+  if (document.getElementById('password').value === '04102025') {
+    closeAll();
+    document.getElementById('giftPopup').style.display='flex';
+  } else alert('Wrong password 💔');
+}
+
+function openBox(box) {
+  box.classList.add('open');
+  for(let i=0;i<40;i++){
+    const p=document.createElement('div');
+    p.className='petal';
+    p.innerText='🌸';
+    p.style.left=Math.random()*100+'vw';
+    p.style.animationDuration=3+Math.random()*3+'s';
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),6000);
+  }
+}
+
+function closeAll() {
+  document.querySelectorAll('.overlay').forEach(o=>o.style.display='none');
+}
+</script>
+</body>
+</html>
